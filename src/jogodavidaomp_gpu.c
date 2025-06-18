@@ -20,9 +20,7 @@ void UmaVidaOMPGPU(int *tabulIn, int *tabulOut, int tam) {
     int total_cells = (tam + 2) * (tam + 2);
 
     // Offloading para GPU com OpenMP target
-    #pragma omp target teams distribute parallel for collapse(2)                    \
-    map(to : tabulIn[0 : total_cells])                                              \
-    map(from : tabulOut[0 : total_cells])
+    #pragma omp target teams distribute parallel for collapse(2) map(to : tabulIn[0 : total_cells]) map(from : tabulOut[0 : total_cells])
     for (int i = 1; i <= tam; i++) {
         for (int j = 1; j <= tam; j++) {
             int vizviv = tabulIn[ind2d(i - 1, j - 1)] + tabulIn[ind2d(i - 1, j)] +
