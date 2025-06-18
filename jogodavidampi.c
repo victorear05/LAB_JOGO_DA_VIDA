@@ -39,30 +39,6 @@ void UmaVidaMPI(int *tabulIn, int *tabulOut, int tam, int start_row, int end_row
     }
 }
 
-void DumpTabul(int *tabul, int tam, int first, int last, char *msg, int rank) {
-    int i, ij;
-
-    if (rank != 0) {
-        return;
-    }
-
-    printf("%s; Dump posicoes [%d:%d, %d:%d] de tabuleiro %d x %d\n", msg, first, last, first, last, tam, tam);
-    for (i = first; i <= last; i++) {
-        printf("=");
-    }
-    printf("=\n");
-    for (i = ind2d(first, 0); i <= ind2d(last, 0); i += ind2d(1, 0)) {
-        for (ij = i + first; ij <= i + last; ij++) {
-            printf("%c", tabul[ij] ? 'X' : '.');
-        }
-        printf("\n");
-    }
-    for (i = first; i <= last; i++) {
-        printf("=");
-    }
-    printf("=\n");
-}
-
 void InitTabul(int *tabulIn, int *tabulOut, int tam, int rank) {
     int ij;
 
