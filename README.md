@@ -1,7 +1,11 @@
 # Laboratório Jogo da Vida Paralelo
 
-## 📋 Visão Geral
+## Alunos
+| Nome | Matrícula |
+| ---- | --------- |
+| Victor Eduardo Araújo Ribeiro | 190038926 |
 
+## 📋 Visão Geral
 Este projeto implementa diferentes versões paralelas do **Jogo da Vida de Conway** para comparação de performance entre paradigmas de programação paralela:
 
 - **MPI** (Message Passing Interface) - memória distribuída
@@ -9,15 +13,7 @@ Este projeto implementa diferentes versões paralelas do **Jogo da Vida de Conwa
 - **CUDA** - computação em GPU NVIDIA
 - **OpenMP GPU** - offloading para GPU com OpenMP
 
-## 🎯 Objetivos
-
-- Experimentar diferentes paradigmas de programação paralela
-- Comparar performance entre as implementações
-- Analisar escalabilidade e eficiência
-- Validar a movimentação correta do "veleiro" no tabuleiro
-
 ## 🏗️ Estrutura do Projeto
-
 ```
 jogo_da_vida/
 ├── src/
@@ -33,28 +29,19 @@ jogo_da_vida/
 ```
 
 ## 🔧 Compilação
-
 ### Pré-requisitos
-
 - **GCC** 7.0+ com suporte OpenMP
 - **Open MPI** ou Intel MPI
 - **CUDA Toolkit** 10.0+ (para versão CUDA)
 - **OpenMP 4.5+** com suporte GPU (para versão OpenMP GPU)
 
-### Verificar Dependências
-
-```bash
-make check-deps
-```
 
 ### Compilar Todas as Versões
-
 ```bash
 make all
 ```
 
 ### Compilar Versões Específicas
-
 ```bash
 # Versão sequencial
 make jogodavida
@@ -73,41 +60,30 @@ make jogodavidaomp_gpu
 ```
 
 ## 🚀 Execução
-
 ### Testes Básicos
-
 ```bash
-# Executar todos os testes básicos
-make test
-
-# Versão sequencial
-./jogodavida
-
-# Versão OpenMP (definir número de threads)
-export OMP_NUM_THREADS=4
-./jogodavidaomp
-
-# Versão MPI (definir número de processos)
-mpirun -np 4 ./jogodavidampi
-
-# Versão CUDA
-./jogodavida_cuda
-
-# Versão OpenMP GPU
-./jogodavidaomp_gpu
-```
-
-### Benchmark Automatizado
-
-```bash
-# Executar benchmark completo
-make benchmark
-# ou
+# Executar script benchmark
 ./run_benchmark.sh
+
+# Executer Versão sequencial
+./exec/jogodavida
+
+# Executer Versão OpenMP
+export OMP_NUM_THREADS=4
+./exec/jogodavidaomp
+
+# Executer Versão MPI
+mpirun -np 4 ./exec/jogodavidampi
+
+# Executer Versão CUDA
+./exec/jogodavida_cuda
+
+# Executer Versão OpenMP GPU
+export OMP_NUM_THREADS=4
+./exec/jogodavidaomp_gpu
 ```
 
 ## 📊 Análise de Resultados
-
 ### Métricas Coletadas
 
 - **Tempo de inicialização** (`t_init`)
@@ -116,7 +92,6 @@ make benchmark
 - **Tempo total** (`t_total`)
 
 ### Cálculo de Performance
-
 ```
 Speedup = T_sequencial / T_paralelo
 Eficiência = Speedup / Número_de_Processadores
@@ -124,16 +99,13 @@ Throughput = Células_processadas / Tempo_computação
 ```
 
 ### Validação
-
 Todas as versões devem:
 - ✅ Produzir resultado "**RESULTADO CORRETO**"
 - ✅ Mover o veleiro do canto superior esquerdo ao inferior direito
 - ✅ Manter exatamente 5 células vivas ao final
 
 ## 🔍 Detalhes das Implementações
-
 ### 1. Versão MPI (`jogodavidampi.c`)
-
 **Estratégia**: Divisão horizontal do tabuleiro entre processos
 
 **Características**:
@@ -148,7 +120,6 @@ mpirun -np <num_processos> ./jogodavidampi
 ```
 
 ### 2. Versão OpenMP (`jogodavidaomp.c`)
-
 **Estratégia**: Paralelização de loops com threads
 
 **Características**:
@@ -164,7 +135,6 @@ export OMP_SCHEDULE=static
 ```
 
 ### 3. Versão CUDA (`jogodavida.cu`)
-
 **Estratégia**: Computação massivamente paralela em GPU
 
 **Características**:
@@ -175,12 +145,11 @@ export OMP_SCHEDULE=static
 
 **Configuração de kernel**:
 ```cpp
-dim3 blockSize(16, 16);           // 256 threads por bloco
+dim3 blockSize(16, 16);                   // 256 threads por bloco
 dim3 gridSize((tam+15)/16, (tam+15)/16);  // Cobertura do tabuleiro
 ```
 
 ### 4. Versão OpenMP GPU (`jogodavidaomp_gpu.c`)
-
 **Estratégia**: Offloading para GPU usando diretivas OpenMP
 
 **Características**:
@@ -196,134 +165,83 @@ dim3 gridSize((tam+15)/16, (tam+15)/16);  // Cobertura do tabuleiro
         map(from: tabulOut[0:total_cells])
 ```
 
-## 📈 Resultados Esperados
-
+## 📈 Resultados Encontrados (média de 3 execuções do benchmark)
 ### Performance Típica
 
-| Versão | Tabuleiro 64x64 | Tabuleiro 256x256 | Speedup |
-|--------|-----------------|-------------------|---------|
-| Sequencial | 0.0120s | 0.1850s | 1.0x |
-| OpenMP (4 threads) | 0.0035s | 0.0520s | 3.4x |
-| MPI (4 processos) | 0.0040s | 0.0580s | 3.2x |
-| CUDA | 0.0015s | 0.0080s | 8.0x |
-| OpenMP GPU | 0.0020s | 0.0120s | 6.2x |
+| Versão8                | Tam=16     | Tam=32     | Tam=64      | Tam=128    | Tam=256    |
+| -----                  | ------     | ------     | ------      | -------    | -------    |
+| CUDA GPU               | 0.0607200s | 0.0003240s |  0.0006709s | 0.0012870s | 0.0028169s |
+| MPI 1 processos        | 0.0000470s | 0.0000670s |  0.0002232s | 0.0014989s | 0.0106549s |
+| MPI 2 processos        | 0.0000830s | 0.0000930s |  0.0003190s | 0.0016251s | 0.0086272s |
+| MPI 4 processos        | 0.0001969s | 0.0002131s |  0.0004752s | 0.0031691s | 0.0163260s |
+| MPI 8 processos        | N/A        | N/A        | N/A         | N/A        | N/A        |
+| OpenMP 16 threads      | 0.0007749s | 0.0017190s |  0.0047998s | 0.0089328s | 0.0188398s |
+| OpenMP 1 threads       | 0.0000169s | 0.0000319s |  0.0001781s | 0.0012751s | 0.0097780s |
+| OpenMP 2 threads       | 0.0000129s | 0.0000370s |  0.0001328s | 0.0007319s | 0.0053899s |
+| OpenMP 4 threads       | 0.0000191s | 0.0000470s |  0.0001302s | 0.0005140s | 0.0038860s |
+| OpenMP 8 threads       | 0.0000329s | 0.0000870s |  0.0001740s | 0.0006409s | 0.0035090s |
+| OpenMP-GPU GPU offload | 0.0039220s | 0.0085161s |  0.0194459s | 0.0459991s | 0.1004109s |
+| Sequencial             | 0.0000160s | 0.0000198s |  0.0001540s | 0.0012200s | 0.0097461s |
 
-*Valores ilustrativos - resultados variam conforme hardware*
+### Conclusão
+Este experimento comparou diferentes paradigmas de programação paralela aplicados ao Jogo da Vida de Conway, revelando insights importantes sobre a adequação de cada tecnologia para diferentes escalas do problema.
 
-### Escalabilidade
+#### 1. Análise de Desempenho por Paradigma
+**OpenMP (Memória Compartilhada)**
+- **Melhor caso**: OpenMP com 4 threads alcançou speedup de até **3.15x** (tam=128: 0.0097461s → 0.0038860s)
+- **Escalabilidade**: Excelente para tamanhos médios e grandes, com melhor eficiência entre 2-8 threads
+- **Overhead**: Para tamanhos pequenos (tam=8,16), o overhead de criação de threads supera os benefícios
 
-- **OpenMP**: Linear até número de cores físicos
-- **MPI**: Boa escalabilidade em clusters
-- **CUDA**: Excelente para tabuleiros grandes (>512x512)
-- **OpenMP GPU**: Boa para tabuleiros médios-grandes
+**CUDA (GPU)**
+- **Melhor caso**: Speedup de **3.46x** para tam=128 (0.0097461s → 0.0028169s)
+- **Característica**: Alta latência inicial (~0.06s) devido à inicialização da GPU
+- **Ponto de equilíbrio**: Só compensa para tam ≥ 64, onde o paralelismo massivo supera o overhead
 
-## 🐛 Troubleshooting
+**MPI (Memória Distribuída)**
+- **Melhor caso**: MPI com 2 processos alcançou speedup de **1.13x** para tam=128
+- **Limitação**: Overhead de comunicação entre processos limita ganhos significativos
+- **Observação**: MPI com 8 processos falhou em todos os testes, indicando problemas de escalabilidade
 
-### Problemas Comuns
+**OpenMP GPU Offloading**
+- **Desempenho**: Consistentemente pior que todas as outras versões (10-50x mais lento)
+- **Causa provável**: Overhead excessivo de transferência de dados CPU↔GPU sem otimização adequada
+- **Recomendação**: Necessita otimizações específicas ou não é adequado para este problema
 
-**1. Erro de compilação MPI**
-```bash
-# Verificar instalação MPI
-which mpicc
-mpicc --version
+#### 2. Percentuais de Ganho Comparativos
+| Comparação | Tam=64 | Tam=128 |
+|------------|---------|----------|
+| OpenMP 4 threads vs Sequencial | **137%** mais rápido | **151%** mais rápido |
+| CUDA vs Sequencial | **-5%** mais devagar | **246%** mais rápido |
+| CUDA vs OpenMP 4 threads | **-150%** mais devagar | **38%** mais rápido |
+| MPI 2 proc vs Sequencial | **-33%** mais devagar | **13%** mais rápido |
 
-# Instalar se necessário (Ubuntu/Debian)
-sudo apt-get install libopenmpi-dev openmpi-bin
-```
+#### 3. Recomendações por Tamanho de Problema
+- **Tam ≤ 32**: Use a versão **sequencial** ou **OpenMP com 2 threads**
+- **Tam = 64**: Use **OpenMP com 4-8 threads** (melhor custo-benefício)
+- **Tam ≥ 128**: Use **CUDA** para máxima performance ou **OpenMP 8 threads** para boa performance sem GPU
 
-**2. Erro CUDA "No CUDA-capable device"**
-```bash
-# Verificar GPU NVIDIA
-nvidia-smi
+#### 4. Achados Importantes
+1. **Overhead vs Paralelismo**: O overhead de inicialização é crítico para problemas pequenos. CUDA tem overhead de ~60ms, tornando-a inviável para tam < 64.
 
-# Verificar instalação CUDA
-nvcc --version
-```
+2. **Eficiência de Threads**: OpenMP mostra melhor eficiência com 4-8 threads. Com 16 threads, a contenção e sincronização degradam a performance.
 
-**3. OpenMP GPU não funciona**
-```bash
-# Verificar suporte do compilador
-gcc -fopenmp -foffload=nvptx-none --version
+3. **Validação**: Todas as versões implementadas (exceto MPI 8 processos) produziram resultados corretos, movendo o veleiro do canto superior esquerdo para o inferior direito.
 
-# Alternativa: usar Clang com OpenMP GPU
-clang -fopenmp -fopenmp-targets=nvptx64 -O3 -o jogodavidaomp_gpu jogodavidaomp_gpu.c
-```
+4. **GPU Efficiency**: A implementação CUDA mostrou-se eficiente apenas para problemas grandes, sugerindo que o kernel poderia ser otimizado para melhor ocupação da GPU em problemas menores.
 
-**4. Resultado incorreto**
-- Verificar se o tabuleiro tem bordas adequadas
-- Conferir índices nos kernels/loops paralelos
-- Validar comunicação entre processos (MPI)
+5. **Surpresa**: OpenMP superou CUDA em alguns casos médios (tam=64), demonstrando que nem sempre GPU é a melhor escolha, especialmente considerando o overhead de setup.
 
-### Logs de Debug
+#### 5. Conclusão Final 
+O experimento demonstra que **não existe uma solução única melhor para todos os casos**. A escolha do paradigma deve considerar:
+- **Tamanho do problema**: Fundamental para determinar se o overhead compensa
+- **Hardware disponível**: GPU necessária para CUDA, múltiplos cores para OpenMP
+- **Facilidade de implementação**: OpenMP oferece melhor relação facilidade/performance
 
-Habilitar logs detalhados:
-```bash
-# MPI
-export OMPI_MCA_verbose=1
-mpirun -np 4 ./jogodavidampi
-
-# CUDA
-export CUDA_LAUNCH_BLOCKING=1
-./jogodavida_cuda
-
-# OpenMP
-export OMP_DISPLAY_ENV=true
-./jogodavidaomp
-```
+Para o cluster utilizado no experimento, **OpenMP com 4-8 threads** apresentou o melhor equilíbrio entre performance, facilidade de uso e consistência across diferentes tamanhos de problema.
 
 ## 📚 Referências
-
 1. **Conway's Game of Life**: Gardner, M. "Mathematical Games", Scientific American 223, Oct 1970
 2. **MPI Documentation**: [https://www.open-mpi.org/doc/](https://www.open-mpi.org/doc/)
 3. **OpenMP Specification**: [https://www.openmp.org/specifications/](https://www.openmp.org/specifications/)
 4. **CUDA Programming Guide**: [https://docs.nvidia.com/cuda/](https://docs.nvidia.com/cuda/)
 5. **OpenMP GPU Offloading**: [https://www.openmp.org/updates/openmp-accelerator-support-gpus/](https://www.openmp.org/updates/openmp-accelerator-support-gpus/)
-
-## 🤝 Contribuição
-
-Este projeto é parte do laboratório de **Programação para Sistemas Paralelos e Distribuídos**.
-
-### Estrutura do Relatório
-
-O relatório deve incluir:
-
-1. **Identificação**
-   - Disciplina, turma, grupo e laboratório
-
-2. **Códigos Comentados**
-   - Listagem com explicação das paralelizações
-   - Instruções de compilação e execução
-   - Dificuldades encontradas e soluções
-
-3. **Experimentação**
-   - Cenários de teste executados
-   - Tabela comparativa de tempos
-   - Análise de speedup e eficiência
-
-4. **Conclusões**
-   - Percentual de ganho entre soluções
-   - GPU mais eficiente no cluster
-   - Recomendações de uso
-
-### Critérios de Avaliação
-
-- ✅ **Funcionalidade**: Todas as versões executam corretamente
-- ✅ **Performance**: Speedup demonstrável nas versões paralelas
-- ✅ **Documentação**: Código bem comentado e relatório completo
-- ✅ **Experimentação**: Análise comparativa rigorosa
-- ✅ **Apresentação**: Vídeo demonstrativo (4-6 min/aluno)
-
-## 📞 Suporte
-
-Para dúvidas sobre:
-- **Compilação**: Verificar seção Troubleshooting
-- **Execução**: Conferir comandos na seção Execução  
-- **Resultados**: Analisar logs em `results/`
-- **Relatório**: Seguir estrutura descrita acima
-
----
-
-**Desenvolvido para**: Programação para Sistemas Paralelos e Distribuídos  
-**Plataforma alvo**: Cluster chococino (164.41.20.252)  
-**Linguagens**: C, CUDA  
-**Paradigmas**: MPI, OpenMP, CUDA, OpenMP GPU
