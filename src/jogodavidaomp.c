@@ -16,6 +16,7 @@ double wall_time(void) {
     return (tv.tv_sec + tv.tv_usec / 1000000.0);
 }
 
+/* Funcao para aplicar as regras do Jogo da Vida com OpenMP */
 void UmaVidaOMP(int *tabulIn, int *tabulOut, int tam) {
     int i, j, vizviv;
 
@@ -44,9 +45,11 @@ void UmaVidaOMP(int *tabulIn, int *tabulOut, int tam) {
     }
 }
 
+/* Inicializacao paralelizada com OpenMP */
 void InitTabul(int *tabulIn, int *tabulOut, int tam) {
     int ij;
 
+    // Paralelizacao da inicializacao
     #pragma omp parallel for
     for (ij = 0; ij < (tam + 2) * (tam + 2); ij++) {
         tabulIn[ij] = 0;
@@ -65,10 +68,10 @@ int Correto(int *tabul, int tam) {
 
     cnt = 0;
 
+// Paralelizacao da contagem com reducao
     #pragma omp parallel for reduction(+ : cnt)
-    for (ij = 0; ij < (tam + 2) * (tam + 2); ij++) {
+    for (ij = 0; ij < (tam + 2) * (tam + 2); ij++)
         cnt = cnt + tabul[ij];
-    }
 
     return (cnt == 5 && tabul[ind2d(tam - 2, tam - 1)] &&
             tabul[ind2d(tam - 1, tam)] && tabul[ind2d(tam, tam - 2)] &&
@@ -86,35 +89,40 @@ int main(void) {
     {
         #pragma omp single
         {
-            num_threads = omp_get_num_threads();
-            printf("Executando com %d threads OpenMP\n", num_threads);
+                num_threads = omp_get_num_threads();
+                printf("Executando com %d threads OpenMP\n", num_threads);
         }
     }
 
+    // Loop para todos os tamanhos do tabuleiro
     for (pow = POWMIN; pow <= POWMAX; pow++) {
         tam = 1 << pow;
 
+        // Alocacao e inicializacao dos tabuleiros
         t0 = wall_time();
         tabulIn = (int *)malloc((tam + 2) * (tam + 2) * sizeof(int));
         tabulOut = (int *)malloc((tam + 2) * (tam + 2) * sizeof(int));
         InitTabul(tabulIn, tabulOut, tam);
         t1 = wall_time();
 
-        for (i = 0; i < 2 * (tam - 3); i++) {
+        // Loop principal de evolucao
+        for (i = 0; i < 2 * (tam - 3); i++)
+        {
             UmaVidaOMP(tabulIn, tabulOut, tam);
             UmaVidaOMP(tabulOut, tabulIn, tam);
         }
 
         t2 = wall_time();
 
+        // Verificacao do resultado
         if (Correto(tabulIn, tam))
             printf("**RESULTADO CORRETO**\n");
         else
             printf("**RESULTADO ERRADO**\n");
 
         t3 = wall_time();
-
-        printf("tam=%d; threads=%d; tempos: init=%7.7f, comp=%7.7f, fim=%7.7f, tot=%7.7f \n", tam, num_threads, t1 - t0, t2 - t1, t3 - t2, t3 - t0);
+        printf("tam=%d; threads=%d; tempos: init=%7.7f, comp=%7.7f, fim=%7.7f, tot=%7.7f \n",
+               tam, num_threads, t1 - t0, t2 - t1, t3 - t2, t3 - t0);
 
         free(tabulIn);
         free(tabulOut);

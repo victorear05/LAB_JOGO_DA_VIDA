@@ -19,17 +19,17 @@ Este projeto implementa diferentes versões paralelas do **Jogo da Vida de Conwa
 ## 🏗️ Estrutura do Projeto
 
 ```
-jogodavida-paralelo/
+jogo_da_vida/
 ├── src/
 │   ├── jogodavida.c          # Versão sequencial original
 │   ├── jogodavidampi.c       # Versão MPI
 │   ├── jogodavidaomp.c       # Versão OpenMP
 │   ├── jogodavida.cu         # Versão CUDA
 │   └── jogodavidaomp_gpu.c   # Versão OpenMP GPU
+├── .gitignore                # Git Ignore 
 ├── Makefile                  # Makefile
-├── run_benchmark.sh          # Script de benchmark automatizado
-├── results/                  # Resultados dos experimentos
-└── README.md                 # Esta documentação
+├── README.md                 # Esta documentação
+└── run_benchmark.sh          # Script de benchmark automatizado
 ```
 
 ## 🔧 Compilação
